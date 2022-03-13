@@ -3,7 +3,14 @@
 
 <!-- the head section -->
 <head>
-	<title>Courses</title>
+	<?php
+        if($_SESSION["accType"] == "S"){
+            echo "<title>Student</title>";
+        }
+    	else if($_SESSION["accType"] == "I"){
+            echo "<title>Instructor</title>";
+        }
+    ?>
 	<meta charset = "utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 	<!-- Bootstrap CSS -->
@@ -28,23 +35,29 @@
 			<a class="navbar-brand">
 				<img src="../images/logo.png" height="60" width="auto" alt="logo">
 			</a>
-			<ul class="navbar-nav ml-auto">
-				<li class="nav-item">
-					<a class="nav-link" style="color: white" onclick="">
-						Dashboard
-					</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" style="color: white; padding-left: 1%" onclick="">
-						Settings
-					</a>
-				</li>
-				<li class="nav-item">
-					<a class="nav-link" style="color: white; padding-left: 1%;" href=http://localhost/adjenda-main/login/login.php>
-						LOGOUT
-					</a>
-				</li>
-			</ul>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsingNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+			<div class="collapse navbar-collapse" id="collapsingNav">
+				<ul class="navbar-nav ml-auto">
+					<li class="nav-item">
+						<a class="nav-link" style="color: white; padding-left: 5%" href=http://localhost/adjenda/dashboard/dash.php>
+							dashboard
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" style="color: white; padding-left: 5%">
+							settings
+						</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" style="color: white; padding-left: 5%; font-weight:bold" href=http://localhost/adjenda/login/login.php>
+							LOGOUT
+						</a>
+					</li>
+				</ul>
+			</div>
 		</nav>
 		<!--Navbar END-->			
 	</header>
