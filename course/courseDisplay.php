@@ -29,7 +29,7 @@
 <main>
 	<!-- Course Header -->
 	<div style="width:94.5%; margin-left:2.5%">
-		<h1>Course <?php echo $course['name'] ?></h1>
+		<h1>(Course: <?php echo $course['id'].") ".$course['name'] ?></h1>
 		<hr border-top: 10px solid black; border-radius: 5px;>
 	</div>
 
@@ -57,62 +57,47 @@
 			<div class="table-wrapper-scroll-y my-custom-scrollbar" >
 				<table class="table table-bordered table-striped mb-0">
 					<tbody>
-						<?php
-						$numofstudents = sizeof($students);
-							for ($x = 0; $x < $numofstudents; $x++){
-								echo <<< row
-									<tr>
-										<th scope="row" style="padding-left: 15%">{$students[$x]['fName']}  {$students[$x]['lName']}</th>
-									</tr>
-								row;
-							}
-						?>
+						<?php $numofstudents = sizeof($students); ?>
+						<?php for ($x = 0; $x < $numofstudents; $x++) : ?>
+							<tr>
+								<th scope="row" style="padding-left: 15%"><?php echo $students[$x]['fName']." ".$students[$x]['lName']; ?></th>
+							</tr>
+						<?php endfor; ?>
 					</tbody>
 				</table>
 			</div>
 		</div>
 
+		<?php if($_SESSION["accType"] == "S") : ?>
+			<div class="form-group" style="float: right; padding-right: 5%; width: 400px">
+				<a style="padding-left: 12%">Enter Attendance Code</a>
+				<form action="course.php" method="post" style="padding-top:2%">
+					<ul style="list-style: none;">
+						<li>
+							<input type="attendancecode" class="form-control" id="attendancecode" name="attendancecode" placeholder="Type your instructor's provided code" required>
+						</li>
+						<li style="padding-top:4%">
+							<button type="submit" class="btn btn-primary">Submit</button>
+						</li>
+					</ul>
+				</form>
+			</div>
+        <?php endif; ?>
 
-		<?php
-            if($_SESSION["accType"] == "S"){
-                echo <<< Scode
-					<div class="form-group" style="float: right; padding-right: 5%; width: 400px">
-						<a style="padding-left: 12%">Enter Attendance Code</a>
-							<form action="course.php" method="post" style="padding-top:2%">
-								<ul style="list-style: none;">
-									<li>
-										<input type="attendancecode" class="form-control" id="attendancecode" name="attendancecode" placeholder="Type your instructor's provided code" required>
-									</li>
-									<li style="padding-top:4%">
-										<button type="submit" class="btn btn-primary">Submit</button>
-									</li>
-								</ul>
-							</form>
-						</div>
-				Scode;
-        	}
-        ?>
-
-		<?php
-			if($_SESSION["accType"] == "I"){
-                echo <<< Icode
-					<div class="form-group" style="float: right; width: 300px">
-						<form action="course.php" method="post" style="padding-top:2%">
-							<ul style="list-style: none;">
-								<li style="padding-top:4%">
-									<button type="button" class="btn btn-primary" style="width: 182px">Take Attendance</button>
-								</li>
-								<li style="padding-top:4%">
-									<button type="button" class="btn btn-primary">View Attendance Logs</button>
-								</li>
-							</ul>
-						</form>
-					</div>
-				Icode;
-
-            }
-		?>
-
+		<?php if($_SESSION["accType"] == "I") : ?>
+			<div class="form-group" style="float: right; width: 300px">
+				<form action="course.php" method="post" style="padding-top:2%">
+					<ul style="list-style: none;">
+						<li style="padding-top:4%">
+							<button type="button" class="btn btn-primary" style="width: 182px">Take Attendance</button>
+						</li>
+						<li style="padding-top:4%">
+							<button type="button" class="btn btn-primary">View Attendance Logs</button>
+						</li>
+					</ul>
+				</form>
+			</div>
+		<?php endif; ?>
 	</div>
 </main>
 
