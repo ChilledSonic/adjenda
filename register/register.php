@@ -20,18 +20,21 @@
 			<div class="form-group">
 				<label for="email">Email:</label>
 				<input type="email" class="form-control" id="email" name="email" placeholder="Enter email" pattern=".+edu" required>
+				<small id="passwordHelp" class="form-text text-muted">Email must end in .edu</small>
 			</div>
 			<div class="form-group">
-				<label for="fname">First Name:</label>
-				<input type="text" class="form-control" id="fname" name="fname" placeholder="Enter first name" pattern="[A-Za-z]+" required>
+				<label for="fName">First Name:</label>
+				<input type="text" class="form-control" id="fName" name="fName" placeholder="Enter first name" pattern="[A-Za-z]+" required>
 			</div>
 			<div class="form-group">
-				<label for="lname">Last Name:</label>
-				<input type="text" class="form-control" id="lname" name="lname" placeholder="Enter last name" pattern="[A-Za-z]+" required>
+				<label for="lName">Last Name:</label>
+				<input type="text" class="form-control" id="lName" name="lName" placeholder="Enter last name" pattern="[A-Za-z]+" required>
 			</div>
 			<div class="form-group">
 				<label for="pass">Password:</label>
-				<input type="password" class = "form-control" id="pass" name="pass" placeholder="Enter password" required>
+				<input type="password" class ="form-control" id="pass" name="pass" placeholder="Enter password" pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*+~=?\|<>/]).{8,}" required>
+				<small id="passwordHelp" class="form-text text-muted">Requires length of at least 8 characters </br> 
+					(one lowercase letter, one uppercase letter, one number, one special character)</small>
 			</div>
 			<div class="form-group">
 				<button type="submit" class="btn btn-primary" style="display: block; margin: auto;">Submit</button>

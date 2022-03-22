@@ -42,15 +42,11 @@ function getRosterEnrollment($courseID, $stuEmail){
     return $status;
 }
 
-//generate attendance code
-$attendcode = '';
-function getRandomString($attendcode) {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';   
+// Generates cryptographically secure enrollment code for new student in roster
+function generateEnrollmentCode(){
+    $bytes = random_bytes(5);
+    $eCode = bin2hex($bytes);
 
-    for ($i = 0; $i < 6; $i++) {
-        $attendcode .= $characters[mt_rand(0, strlen($characters) - 1)];
-    }
-
-    return $attendcode;
+    return $eCode;
 }
 ?>
