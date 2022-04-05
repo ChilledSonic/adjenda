@@ -8,6 +8,17 @@
 	width: 600px;
 	overflow: auto;
 }
+.my-custom-scrollbar-popup {
+	position: relative;
+	height: 350px;
+	width: 468px;
+	overflow: auto;
+}
+ul.no-bullets {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
 .table-wrapper-scroll-y {
 	display: block;
 }
@@ -29,7 +40,7 @@
 <main>
 	<!-- Course Header -->
 	<div style="width:94.5%; margin-left:2.5%">
-		<h1>(Course: <?php echo $course['id'].") ".$course['name'] ?></h1>
+		<h1>(Course ID: <?php echo $course['id'].") ".$course['name'] ?></h1>
 		<hr border-top: 10px solid black; border-radius: 5px;>
 	</div>
 
@@ -54,11 +65,13 @@
 						</a>
 					</li>
 				</ul>
-				<ul class="navbar-nav" style="margin-left:63%">
+				<ul class="navbar-nav ml-auto">
 					<li class="nav-item">
 						<a class="nav-link" style="color: white;">
 							<?php if($_SESSION["accType"] == "I") : ?>
 								<?php
+								//NEED TO SWITCH CHECK TO IF CURRENT LESSON'S ATTENDNACE CODE FIELD IS NULL OR NOT
+								//*currently generating one attendance code makes it display for all courses*
 									if(isset($_SESSION['attendanceCode'])){
 										$code = $_SESSION['attendanceCode'];
 										echo "Attendance Code : ".$code;
@@ -77,13 +90,74 @@
 				<table class="table table-bordered table-striped mb-0">
 					<tbody>
 						<?php $numofstudents = sizeof($students); ?>
+						<?php $enrollmentCount = 0; //initial enrollment count ?>
 						<?php for ($x = 0; $x < $numofstudents; $x++) : ?>
-							<tr>
-								<th scope="row" style="padding-left: 15%"><?php echo $students[$x]['fName']." ".$students[$x]['lName']; ?></th>
-							</tr>
+							<!--Checks if the student has been enrolled before showing them in the list-->
+							<?php if ($students[$x]['enrollment'] != 0) : ?>
+								<tr>
+									<?php $enrollmentCount += 1; //increments enrollment count for each student found?>
+									<th scope="row" style="padding-left: 15%"><?php echo $students[$x]['fName']." ".$students[$x]['lName']; ?></th>
+								</tr>
+							<?php endif; ?>
 						<?php endfor; ?>
 					</tbody>
 				</table>
+			</div>
+			<div style="padding-top: 2%">
+				<?php if($_SESSION["accType"] == "I") : ?>
+					<!-- Add Student -->
+					<div>
+						<form action="course.php" method="post">
+							<input type="hidden" name="action" value="addStudent">
+								<div class="modal fade" id="addModal">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+											<ul class="no-bullets" style="width:100%">
+                                                <li><h3>Add Student</h3></li>
+												
+												<li><input type="searchstudent" class="form-control" style="width:80%; float:left" id="searchstudent" name="searchstudent" placeholder="Search student by email or name" required>
+												<button type="submit" class="btn btn-primary" style="float:right">Search</button></li>
+												</ul>
+                                            </div>
+										</div>
+									</div>
+								</div>
+						</form>
+						<button class="btn btn-primary btn-block" href="#" data-toggle="modal" data-target="#addModal" style="width:25%; float:left;">Add Student</button>
+					</div>
+					<!-- Drop Student-->
+					<div style="padding-left: 30%">
+						<form action="course.php" method="post">
+							<input type="hidden" name="action" value="dropStudent">
+								<div class="modal fade" id="dropModal">
+									<div class="modal-dialog">
+										<div class="modal-content">
+											<div class="modal-header">
+												<ul class="no-bullets">
+                                                <li><h3>Drop Student</h3></li>
+													<li><div class="table-wrapper-scroll-y my-custom-scrollbar-popup">
+														<table class="table table-bordered table-striped mb-0">
+															<tbody>
+																<?php $numofstudents = sizeof($students); ?>
+																	<?php for ($x = 0; $x < $numofstudents; $x++) : ?>
+																		<tr>
+																			<th scope="row" style="padding-left: 15%"><input type="checkbox" name="removestudent" value="checkbox_value"><?php echo " ".$students[$x]['fName']." ".$students[$x]['lName']; ?></th>
+																		</tr>
+																	<?php endfor; ?>
+															</tbody>
+														</table>
+													</div></li>
+													<li style="padding-top: 3%"><button class="btn btn-primary btn-block" href="#" data-toggle="modal" data-target="#dropModal" style="width:40%;">Drop Student</button></li>
+												</ul>
+                                            </div>
+										</div>
+									</div>
+								</div>
+						</form>
+						<button class="btn btn-primary btn-block" href="#" data-toggle="modal" data-target="#dropModal" style="width:40%;">Remove Student</button> 
+					</div>
+				<?php endif; ?>
 			</div>
 		</div>
 
@@ -113,7 +187,7 @@
 									<input type="hidden" name="action" value="takeAttendance">
 									<!--Only enables the 'Take Attendance' button if there is at least one student in the roster-->
 									<?php
-										if($numofstudents != 0 && !(isset($_SESSION['attendanceCode']))){
+										if($enrollmentCount != 0 && !(isset($_SESSION['attendanceCode']))){
 											echo "<button type=\"submit\" class=\"btn btn-primary\" style=\"width: 182px\">Take Attendance</button>";
 										}
 										elseif(isset($_SESSION['attendanceCode'])){

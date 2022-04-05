@@ -1,7 +1,21 @@
 <?php require_once('database.php'); ?>
 
 <?php
-// Checks if the current date is a lesson for the selected course
+//Adds a new lesson to the database
+function addLesson($courseID, $lDate){
+    global $db;
+    $query = 'INSERT INTO LESSONS
+                 (courseID, lDate)
+              VALUES
+                (:courseID, :lDate)';
+    $statement = $db->prepare($query);
+    $statement->bindValue(':courseID', $courseID);
+    $statement->bindValue(':lDate', $lDate);
+    $statement->execute();
+    $statement->closeCursor();
+}
+
+//Checks if the current date is a lesson for the selected course
 function checkLessonDate($courseID, $currentDate) {
     global $db;
     $query = 'SELECT * FROM LESSONS
@@ -12,15 +26,14 @@ function checkLessonDate($courseID, $currentDate) {
     $lessons = $statement->fetchAll();
     $statement->closeCursor();
 
-    $result = false;
+    $found = false;
     foreach($lessons as $lesson){
-        if($currentDate == $lesson['ldate']){
-            $result = true;
+        if($currentDate == $lesson['lDate']){
+            $found = true;
             break; //breaks out of the loop if found
         }
     }
-
-    return $result;
+    return $found;
 }
 
 //Generates the instructor's random attendance code for a given class lesson
