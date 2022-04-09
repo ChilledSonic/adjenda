@@ -56,6 +56,28 @@ switch($action){
         //downloadLog($_SESSION['courseID'], $selectedDate)
         echo "<script> window.location='../course/course.php'; </script>"; //return to course page
         break;
+    //displays the searched products
+    case 'search':
+        $searchTerm = filter_input(INPUT_POST, 'searchStudent');
+        $foundStudents = searchStudentsByEmail($searchTerm);
+
+        foreach($foundStudents as $foundStudent){
+            echo "<script> alert('Student: The class is not in progress'); </script>";
+        }
+
+        include('courseDisplay.php');
+        break;
+    case 'dropStudent':
+        $removedStudents = $_POST['removedStudent']; //array of students to be removed
+
+        //cycle through array and call dropStudent function for each student
+        for($i = 0; $i < sizeof($removedStudents); $i++){
+            echo '<script> alert("'.$removedStudents[$i].' has been dropped from the course."); </script>';
+            dropStudent($removedStudents[$i], $_SESSION['courseID']);
+        }
+
+        echo "<script> window.location='../course/course.php'; </script>"; //return to course page
+        break;
 }
 
 ?>

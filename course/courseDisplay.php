@@ -103,6 +103,7 @@ ul.no-bullets {
 					</tbody>
 				</table>
 			</div>
+
 			<div style="padding-top: 2%">
 				<?php if($_SESSION["accType"] == "I") : ?>
 					<!-- Add Student -->
@@ -116,7 +117,7 @@ ul.no-bullets {
 											<ul class="no-bullets" style="width:100%">
                                                 <li><h3>Add Student</h3></li>
 												
-												<li><input type="searchstudent" class="form-control" style="width:80%; float:left" id="searchstudent" name="searchstudent" placeholder="Search student by email or name" required>
+												<li><input type="searchstudent" class="form-control" style="width:80%; float:left" id="searchstudent" name="searchstudent" placeholder="Search student by email" required>
 												<button type="submit" class="btn btn-primary" style="float:right">Search</button></li>
 												</ul>
                                             </div>
@@ -142,23 +143,57 @@ ul.no-bullets {
 																<?php $numofstudents = sizeof($students); ?>
 																	<?php for ($x = 0; $x < $numofstudents; $x++) : ?>
 																		<tr>
-																			<th scope="row" style="padding-left: 15%"><input type="checkbox" name="removestudent" value="checkbox_value"><?php echo " ".$students[$x]['fName']." ".$students[$x]['lName']; ?></th>
+																			<th scope="row" style="padding-left: 15%">
+																				<div class="students">
+																					<input type="checkbox" class="form-check-input" name="removedStudent[]" value="<?php echo $students[$x]['stuEmail'] ?>" required>
+																					<label class="form-check-label"><?php echo " ".$students[$x]['fName']." ".$students[$x]['lName']; ?></label>
+																				</div>
+																			</th>
 																		</tr>
 																	<?php endfor; ?>
 															</tbody>
 														</table>
 													</div></li>
-													<li style="padding-top: 3%"><button class="btn btn-primary btn-block" href="#" data-toggle="modal" data-target="#dropModal" style="width:40%;">Drop Student</button></li>
+													<div class="drop">
+														<li style="padding-top: 3%"><button type="submit" class="btn btn-primary" style="width:40%;" disabled>Drop Student</button></li>
+													</div>	
 												</ul>
                                             </div>
 										</div>
 									</div>
 								</div>
 						</form>
-						<button class="btn btn-primary btn-block" href="#" data-toggle="modal" data-target="#dropModal" style="width:40%;">Remove Student</button> 
+						<!--Form Scripting-->
+						<script type="text/javascript">
+                            //Requires at least one checkbox be selected from students
+                            $(function(){
+                                var requiredCheckboxes = $('.students :checkbox[required]');
+								var dropButton = $('.drop :submit[disabled]');
+                                requiredCheckboxes.change(function(){
+                                    if(requiredCheckboxes.is(':checked')) {
+                                        requiredCheckboxes.removeAttr('required');
+										dropButton.removeAttr('disabled');
+                                    } 
+                                    else {
+                                        requiredCheckboxes.attr('required', 'required');
+										dropButton.attr('disabled', 'disabled');
+                                    }
+                                });
+                            });
+                        </script>
+						<!--Only enables the 'Remove Student' button if there is at least one student in the roster-->
+						<?php 
+							if($enrollmentCount != 0){
+								echo "<button class=\"btn btn-primary btn-block\" href=\"#\" data-toggle=\"modal\" data-target=\"#dropModal\" style=\"width:40%;\">Remove Student</button>";
+							}
+							else{
+								echo "<button class=\"btn btn-primary btn-block\" href=\"#\" data-toggle=\"modal\" data-target=\"#dropModal\" style=\"width:40%;\" disabled>Remove Student</button>";
+							}
+						?> 
 					</div>
 				<?php endif; ?>
 			</div>
+
 		</div>
 
 		<?php if($_SESSION["accType"] == "S") : ?>
@@ -224,6 +259,7 @@ ul.no-bullets {
 													</select>
 												</div>
 											</div>
+											<!--Form Scripting-->
 											<script type='text/javascript'>
 												//Disables the 'Download Log' button until a date has been selected
 												$('select').change(function() {
