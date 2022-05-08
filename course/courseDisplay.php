@@ -1,9 +1,12 @@
 <!--Includes the defined header-->
-<?php include '../view/header.php'; ?>
+<?php
+	$title = $course['name'];
+	include '../view/header.php'; 
+?>
 
 <style>
 	.my-custom-scrollbar {
-	position: relaive;
+	position: relative;
 	height: 450px;
 	width: 600px;
 	overflow: auto;
@@ -50,7 +53,7 @@ ul.no-bullets {
 			<nav class="navbar navbar-expand-sm navbar-light sticky-top" style="background-color: #0079C2; border-radius: 0.5em; height: 8%;">
 				<ul class="navbar-nav" style="margin-left:2%">
 					<li class="nav-item">
-						<a class="nav-link" style="color: white;" href="#">
+						<a class="nav-link" style="color: white;" href="../course/course.php">
 							Class Roster
 						</a>
 					</li>
@@ -106,37 +109,52 @@ ul.no-bullets {
 
 			<div style="padding-top: 2%">
 				<?php if($_SESSION["accType"] == "I") : ?>
-					<!-- Add Student -->
+					<!-- Search Students -->
 					<div>
 						<form action="course.php" method="post">
-							<input type="hidden" name="action" value="addStudent">
-								<div class="modal fade" id="addModal">
+							<input type="hidden" name="action" value="searchStudents">
+								<div class="modal fade" id="searchModal">
 									<div class="modal-dialog">
 										<div class="modal-content">
 											<div class="modal-header">
-											<ul class="no-bullets" style="width:100%">
-                                                <li><h3>Add Student</h3></li>
-												
-												<li><input type="searchstudent" class="form-control" style="width:80%; float:left" id="searchstudent" name="searchstudent" placeholder="Search student by email" required>
-												<button type="submit" class="btn btn-primary" style="float:right">Search</button></li>
-												</ul>
+												<div class="modal-body ">
+													<ul class="no-bullets" style="width:100%">
+														<li><h3>Add Student</h3></li>
+														<li>
+																<div class="form-check form-check-inline">
+																	<input class="form-check-input" type="radio" name="radioButton" value="email" checked required>
+																	<label class="form-check-label">
+																		By Email
+																	</label>
+																</div>
+																<div class="form-check form-check-inline">
+																	<input class="form-check-input" type="radio" name="radioButton" value="name">
+																	<label class="form-check-label">
+																		By Last Name
+																	</label>
+																</div>
+															<input type="text" class="form-control" style="width:80%; float:left" id="searchTerm" name="searchTerm" placeholder="Search students" required>
+															<button type="submit" class="btn btn-primary" style="float:right">Search</button>
+														</li>
+													</ul>
+												</div>
                                             </div>
 										</div>
 									</div>
 								</div>
 						</form>
-						<button class="btn btn-primary btn-block" href="#" data-toggle="modal" data-target="#addModal" style="width:25%; float:left;">Add Student</button>
+						<button class="btn btn-primary btn-block" href="#" data-toggle="modal" data-target="#searchModal" style="width:25%; float:left;">Add Students</button>
 					</div>
 					<!-- Drop Student-->
 					<div style="padding-left: 30%">
 						<form action="course.php" method="post">
-							<input type="hidden" name="action" value="dropStudent">
+							<input type="hidden" name="action" value="dropStudents">
 								<div class="modal fade" id="dropModal">
 									<div class="modal-dialog">
 										<div class="modal-content">
 											<div class="modal-header">
 												<ul class="no-bullets">
-                                                <li><h3>Drop Student</h3></li>
+													<li><h3>Existing Roster</h3></li>
 													<li><div class="table-wrapper-scroll-y my-custom-scrollbar-popup">
 														<table class="table table-bordered table-striped mb-0">
 															<tbody>
@@ -145,7 +163,7 @@ ul.no-bullets {
 																		<tr>
 																			<th scope="row" style="padding-left: 15%">
 																				<div class="students">
-																					<input type="checkbox" class="form-check-input" name="removedStudent[]" value="<?php echo $students[$x]['stuEmail'] ?>" required>
+																					<input type="checkbox" class="form-check-input" name="removedStuEmails[]" value="<?php echo $students[$x]['stuEmail'] ?>" required>
 																					<label class="form-check-label"><?php echo " ".$students[$x]['fName']." ".$students[$x]['lName']; ?></label>
 																				</div>
 																			</th>
@@ -155,7 +173,7 @@ ul.no-bullets {
 														</table>
 													</div></li>
 													<div class="drop">
-														<li style="padding-top: 3%"><button type="submit" class="btn btn-primary" style="width:40%;" disabled>Drop Student</button></li>
+														<li style="padding-top: 3%"><button type="submit" class="btn btn-primary" style="width:40%;" disabled>Drop Students</button></li>
 													</div>	
 												</ul>
                                             </div>
@@ -184,10 +202,10 @@ ul.no-bullets {
 						<!--Only enables the 'Remove Student' button if there is at least one student in the roster-->
 						<?php 
 							if($enrollmentCount != 0){
-								echo "<button class=\"btn btn-primary btn-block\" href=\"#\" data-toggle=\"modal\" data-target=\"#dropModal\" style=\"width:40%;\">Remove Student</button>";
+								echo "<button class=\"btn btn-primary btn-block\" href=\"#\" data-toggle=\"modal\" data-target=\"#dropModal\" style=\"width:40%;\">Remove Students</button>";
 							}
 							else{
-								echo "<button class=\"btn btn-primary btn-block\" href=\"#\" data-toggle=\"modal\" data-target=\"#dropModal\" style=\"width:40%;\" disabled>Remove Student</button>";
+								echo "<button class=\"btn btn-primary btn-block\" href=\"#\" data-toggle=\"modal\" data-target=\"#dropModal\" style=\"width:40%;\" disabled>Remove Students</button>";
 							}
 						?> 
 					</div>
@@ -200,6 +218,7 @@ ul.no-bullets {
 			<div class="form-group" style="float: right; padding-right: 5%; width: 400px">
 				<a style="padding-left: 12%">Enter Attendance Code</a>
 				<form action="course.php" method="post" style="padding-top:2%">
+					<input type="hidden" name="action" value="enteredCode">
 					<ul style="list-style: none;">
 						<li>
 							<input type="attendancecode" class="form-control" id="attendancecode" name="attendancecode" placeholder="Type your instructor's provided code" required>

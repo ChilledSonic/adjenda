@@ -5,6 +5,7 @@ require_once('../model/courseFunctions.php');
 require_once('../model/rosterFunctions.php');
 require_once('../model/attendanceFunctions.php');
 require_once('../model/lessonFunctions.php');
+require_once('../model/stuFunctions.php');
 
 //retrieves the chosen action
 $action = filter_input(INPUT_POST, 'action');
@@ -56,19 +57,58 @@ switch($action){
         //downloadLog($_SESSION['courseID'], $selectedDate)
         echo "<script> window.location='../course/course.php'; </script>"; //return to course page
         break;
-    //displays the searched products
-    case 'search':
-        $searchTerm = filter_input(INPUT_POST, 'searchStudent');
-        $foundStudents = searchStudentsByEmail($searchTerm);
+    case 'searchStudents':
+        $course = getCourseByID($_SESSION['courseID']);
+        $searchTerm = filter_input(INPUT_POST, 'searchTerm');
+        $radioButton = filter_input(INPUT_POST, 'radioButton');
 
-        foreach($foundStudents as $foundStudent){
-            echo "<script> alert('Student: The class is not in progress'); </script>";
+        //determines if the search should be by name or email
+        if($radioButton == "email"){
+            $foundStudents = searchStudentsByEmail($searchTerm);
+        }
+        else if($radioButton == "name"){
+            $foundStudents = searchStudentsByLastName($searchTerm);
         }
 
-        include('courseDisplay.php');
+        //checks if each student found by the search is already in the class or not
+        foreach($foundStudents as $foundStudent){
+            if(!(checkRosterForStudent($_SESSION['courseID'], $foundStudent['email'])))
+                $eligibleStudents[] = $foundStudent;
+        }
+
+        include('searchDisplay.php');
         break;
-    case 'dropStudent':
-        $removedStudents = $_POST['removedStudent']; //array of students to be removed
+    case 'addStudents':
+        $selectedStuEmails = $_POST['selectedStuEmails']; //array of student emails that were selected
+        $allStuFNames = $_POST['allStuFNames']; //array of all student fNames found in the search
+        $allStuLNames = $_POST['allStuLNames']; //array of all student lNames found in the search
+
+        //cycles through array of names to find the students' names associated with the selected emails
+        for($i = 0; $i < sizeof($allStuFNames); $i++){
+            $match = false; //flag for determining if the iterated names match with one of the selected emails
+            //cycles through array of selected emails
+            for($j = 0; $j < sizeof($selectedStuEmails); $j++){
+                $index = substr($selectedStuEmails[$j], 0, 1); //retrieves the original index of each of all the found emails from the first character of each string
+                //if the original index of the email matches with the names
+                //then mark flag and break out of loop
+                if($index == $i){
+                    $addedEmail = substr($selectedStuEmails[$j], 1);
+                    $match = true;
+                    break;
+                }
+            }
+            //if the index of the email matches with the names, then add that student's name and email to the roster
+            if($match){
+                $enrollmentCode = generateEnrollmentCode(); //generated unique enrollment code
+                echo '<script> alert("'.$allStuFNames[$i].' '.$allStuLNames[$i].' ('.$addedEmail.') has been added to the course."); </script>';
+                addToRoster($_SESSION['courseID'], $addedEmail, $allStuFNames[$i], $allStuLNames[$i], $enrollmentCode);
+            }
+        }
+
+        echo "<script> window.location='../course/course.php'; </script>"; //return to course page
+        break;
+    case 'dropStudents':
+        $removedStudents = $_POST['removedStuEmails']; //array of student emails to be removed
 
         //cycle through array and call dropStudent function for each student
         for($i = 0; $i < sizeof($removedStudents); $i++){

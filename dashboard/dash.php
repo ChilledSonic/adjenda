@@ -63,19 +63,25 @@ switch($action){
         $courses = getCoursesByEmail($_SESSION["accEmail"]); //retrieves the instructor's exisiting courses
         $created = false; //boolean to represent if the course is successfully created or not
         //checks if the instructor already has an existing course with the given name
-        if(checkInstrCourseNames($courses, $courseName)){
-            echo "<script> alert('COURSE HAS NOT BEEN CREATED: You already have an existing course with the selected name.'); </script>";
-        }
-        else{
-            //checks if the new course is on the same day as an existing course
-            //and if so then checks if there is a time conflict
-            if(checkInstrCourseDaysTime($courses, $selectedDays, $startTime)){
-                echo "<script> alert('COURSE HAS NOT BEEN CREATED: Your selected start time conflicts with one of your existing courses.'); </script>";
+        if(!empty($courses)){
+            if(checkInstrCourseNames($courses, $courseName)){
+                echo "<script> alert('COURSE HAS NOT BEEN CREATED: You already have an existing course with the selected name.'); </script>";
             }
             else{
-                addCourse($courseName, $_SESSION["accEmail"], $days, $startTime, $endTime);
-                $created = true;
+                //checks if the new course is on the same day as an existing course
+                //and if so then checks if there is a time conflict
+                if(checkInstrCourseDaysTime($courses, $selectedDays, $startTime)){
+                    echo "<script> alert('COURSE HAS NOT BEEN CREATED: Your selected start time conflicts with one of your existing courses.'); </script>";
+                }
+                else{
+                    addCourse($courseName, $_SESSION["accEmail"], $days, $startTime, $endTime);
+                    $created = true;
+                }
             }
+        }
+        else{
+            addCourse($courseName, $_SESSION["accEmail"], $days, $startTime, $endTime);
+            $created = true;
         }
 
         //Lessons
